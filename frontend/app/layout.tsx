@@ -1,3 +1,4 @@
+"use client"
 import {
   ClerkProvider,
   SignInButton,
@@ -6,6 +7,9 @@ import {
   UserButton
 } from '@clerk/nextjs'
 import './globals.css'
+import Navbar from '../components/Navbar'
+import { GuestsProvider } from '../context/GuestContext'
+
 export default function RootLayout({
   children,
 }: {
@@ -13,17 +17,15 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
+      <GuestsProvider>
       <html lang="en">
-        <body>
-          <SignedOut>
-            <SignInButton />
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
+        <body className='max-w-5xl mx-auto'>
+          <Navbar />
+          
           {children}
         </body>
       </html>
+      </GuestsProvider>
     </ClerkProvider>
   )
 }
