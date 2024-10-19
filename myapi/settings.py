@@ -39,7 +39,7 @@ ROOT_URLCONF = 'myapi.urls'
 
 TEMPLATES = [
     {
-        'myapi': 'django.template.myapis.django.DjangoTemplates',
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -57,7 +57,10 @@ WSGI_APPLICATION = 'myapi.wsgi.application'
 
 # Database
 DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+    'default': dj_database_url.config(
+        default='sqlite:////' + os.path.join(BASE_DIR, 'db.sqlite3'),
+        conn_max_age=600
+    )
 }
 
 # Password validation

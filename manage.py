@@ -1,5 +1,10 @@
 #!/usr/bin/env python
-"""Django's command-line utility for administrative tasks."""
+"""
+DA command-line utility for interacting with Django.
+Used for running the server, creating migrations, and executing management commands.
+
+A migration is a file that describes changes to your database schema
+"""
 import os
 import sys
 

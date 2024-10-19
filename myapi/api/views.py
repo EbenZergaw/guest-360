@@ -1,20 +1,21 @@
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.utils.decorators import method_decorator
-from django.views import View
-import json
+"""
+Define endpoints
+"""
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from .models import Guest
+from .serializers import GuestSerializer
 
-@method_decorator(csrf_exempt, name='dispatch')
-class GuestView(View):
+class GuestView(APIView):
     def get(self, request):
-        # This handles GET requests
-        return JsonResponse({"message": "This is a GET request to the Guest API"})
+        guests = Guest.objects.all()
+        serializer = GuestSerializer(guests, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
-        # This handles POST requests
-        try:
-            data = json.loads(request.body)
-            # Process the data here (e.g., save to database)
-            return JsonResponse({"message": "POST request successful", "data": data})
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
+        serializer = GuestSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

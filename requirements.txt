@@ -5,4 +5,4 @@ psycopg2-binary==2.9.10
 djangorestframework==3.15.2
 asgiref==3.8.1
 sqlparse==0.5.1
-tzdata==2024.2
+tzdata==2024.2dj-database-url

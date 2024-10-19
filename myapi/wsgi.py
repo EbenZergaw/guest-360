@@ -1,10 +1,7 @@
 """
-WSGI config for myapi project.
+WSGI (Web Server Gateway Interface) configuration for deploying  project.
 
-It exposes the WSGI callable as a module-level variable named ``application``.
-
-For more information on this file, see
-https://docs.djangoproject.com/en/5.1/howto/deployment/wsgi/
+Used by Heroku to serve the Django application.
 """
 
 import os
