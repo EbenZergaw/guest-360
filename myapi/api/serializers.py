@@ -1,3 +1,6 @@
+"""
+Convert model instances like Guests into a format that can be easily stored/transmitted, i.e. JSON
+"""
 from rest_framework import serializers
 from .models import Guest
 
