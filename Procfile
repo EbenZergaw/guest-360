@@ -1,1 +1,1 @@
-web: gunicorn --chdir myapi myapi.wsgi
+web: gunicorn myapi.wsgi --log-file -
