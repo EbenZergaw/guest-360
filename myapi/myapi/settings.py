@@ -3,7 +3,6 @@ import dj_database_url
 
 # Add to INSTALLED_APPS
 INSTALLED_APPS = [
-    ...
     'rest_framework',
     'api',
 ]
