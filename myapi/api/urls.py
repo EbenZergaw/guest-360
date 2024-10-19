@@ -1,6 +1,9 @@
 from django.urls import path
-from .views import HelloWorldView
+from django.http import HttpResponse
+
+def test_view(request):
+    return HttpResponse("API is working!")
 
 urlpatterns = [
-    path('hello/', HelloWorldView.as_view(), name='hello_world'),
+    path('test/', test_view, name='test'),
 ]
