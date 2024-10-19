@@ -6,7 +6,7 @@ def home(request):
     return HttpResponse("Welcome to Guest360 API")
 
 urlpatterns = [
-    path('', home, name='home'),  # Add this line
+    path('', home, name='home'),
     path('admin/', admin.site.urls),
     path('api/', include('myapi.api.urls')),
 ]
