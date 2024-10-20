@@ -1,6 +1,3 @@
-"""
-Convert model instances like Guests into a format that can be easily stored/transmitted, i.e. JSON
-"""
 from rest_framework import serializers
 from .models import Guest, Booking, Preferences, RoomLocation, PillowType, Amenity, FoodPreference, FavoriteFood, DietaryRestriction, BeveragePreference, NonAlcoholicBeverage, AlcoholicBeverage
 
@@ -89,9 +86,10 @@ class GuestSerializer(serializers.ModelSerializer):
         return BookingSerializer(bookings, many=True).data
 
     def create(self, validated_data):
-        preferences_data = validated_data.pop('preferences')
+        preferences_data = validated_data.pop('preferences', None)
         guest = Guest.objects.create(**validated_data)
-        self.create_preferences(guest, preferences_data)
+        if preferences_data:
+            self.create_preferences(guest, preferences_data)
         return guest
 
     def update(self, instance, validated_data):
@@ -104,9 +102,85 @@ class GuestSerializer(serializers.ModelSerializer):
         return instance
 
     def create_preferences(self, guest, preferences_data):
-        # Implementation for creating preferences
-        pass
+        room_locations_data = preferences_data.pop('room_locations', [])
+        pillow_types_data = preferences_data.pop('pillow_types', [])
+        amenities_data = preferences_data.pop('amenities', [])
+        food_preferences_data = preferences_data.pop('food_preferences', {})
+        beverage_preferences_data = preferences_data.pop('beverage_preferences', {})
+
+        preferences = Preferences.objects.create(guest=guest, **preferences_data)
+
+        for location in room_locations_data:
+            RoomLocation.objects.create(preferences=preferences, **location)
+
+        for pillow_type in pillow_types_data:
+            PillowType.objects.create(preferences=preferences, **pillow_type)
+
+        for amenity in amenities_data:
+            Amenity.objects.create(preferences=preferences, **amenity)
+
+        if food_preferences_data:
+            food_pref = FoodPreference.objects.create(preferences=preferences)
+            for favorite in food_preferences_data.get('favorites', []):
+                FavoriteFood.objects.create(food_preference=food_pref, **favorite)
+            for restriction in food_preferences_data.get('dietary_restrictions', []):
+                DietaryRestriction.objects.create(food_preference=food_pref, **restriction)
+
+        if beverage_preferences_data:
+            beverage_pref = BeveragePreference.objects.create(preferences=preferences)
+            for non_alcoholic in beverage_preferences_data.get('non_alcoholic', []):
+                NonAlcoholicBeverage.objects.create(beverage_preference=beverage_pref, **non_alcoholic)
+            for alcoholic in beverage_preferences_data.get('alcoholic', []):
+                AlcoholicBeverage.objects.create(beverage_preference=beverage_pref, **alcoholic)
 
     def update_preferences(self, preferences, preferences_data):
-        # Implementation for updating preferences
-        pass
+        room_locations_data = preferences_data.pop('room_locations', None)
+        pillow_types_data = preferences_data.pop('pillow_types', None)
+        amenities_data = preferences_data.pop('amenities', None)
+        food_preferences_data = preferences_data.pop('food_preferences', None)
+        beverage_preferences_data = preferences_data.pop('beverage_preferences', None)
+
+        for attr, value in preferences_data.items():
+            setattr(preferences, attr, value)
+        preferences.save()
+
+        if room_locations_data is not None:
+            preferences.room_locations.all().delete()
+            for location in room_locations_data:
+                RoomLocation.objects.create(preferences=preferences, **location)
+
+        if pillow_types_data is not None:
+            preferences.pillow_types.all().delete()
+            for pillow_type in pillow_types_data:
+                PillowType.objects.create(preferences=preferences, **pillow_type)
+
+        if amenities_data is not None:
+            preferences.amenities.all().delete()
+            for amenity in amenities_data:
+                Amenity.objects.create(preferences=preferences, **amenity)
+
+        if food_preferences_data is not None:
+            if hasattr(preferences, 'food_preferences'):
+                preferences.food_preferences.favorites.all().delete()
+                preferences.food_preferences.dietary_restrictions.all().delete()
+                food_pref = preferences.food_preferences
+            else:
+                food_pref = FoodPreference.objects.create(preferences=preferences)
+
+            for favorite in food_preferences_data.get('favorites', []):
+                FavoriteFood.objects.create(food_preference=food_pref, **favorite)
+            for restriction in food_preferences_data.get('dietary_restrictions', []):
+                DietaryRestriction.objects.create(food_preference=food_pref, **restriction)
+
+        if beverage_preferences_data is not None:
+            if hasattr(preferences, 'beverage_preferences'):
+                preferences.beverage_preferences.non_alcoholic.all().delete()
+                preferences.beverage_preferences.alcoholic.all().delete()
+                beverage_pref = preferences.beverage_preferences
+            else:
+                beverage_pref = BeveragePreference.objects.create(preferences=preferences)
+
+            for non_alcoholic in beverage_preferences_data.get('non_alcoholic', []):
+                NonAlcoholicBeverage.objects.create(beverage_preference=beverage_pref, **non_alcoholic)
+            for alcoholic in beverage_preferences_data.get('alcoholic', []):
+                AlcoholicBeverage.objects.create(beverage_preference=beverage_pref, **alcoholic)
