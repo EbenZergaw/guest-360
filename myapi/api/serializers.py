@@ -8,18 +8,15 @@ class BookingSerializer(serializers.ModelSerializer):
 
 class RoomPreferencesSerializer(serializers.ModelSerializer):
     location = serializers.SerializerMethodField()
+    type = serializers.CharField(source='room_type')
+    temperature = serializers.IntegerField(source='room_temperature')
 
     class Meta:
         model = Preferences
-        fields = ['room_type', 'location', 'temperature']
+        fields = ['type', 'location', 'temperature']
 
     def get_location(self, obj):
         return [location.location for location in obj.room_locations.all()]
-
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
-        ret['type'] = instance.room_type
-        return ret
 
 class FoodPreferencesSerializer(serializers.ModelSerializer):
     favorites = serializers.SerializerMethodField()
@@ -101,7 +98,12 @@ class GuestSerializer(serializers.ModelSerializer):
             food_preferences_data = preferences_data.pop('food_preferences', {})
             beverage_preferences_data = preferences_data.pop('beverages', {})
 
-            preferences = Preferences.objects.create(guest=guest, **preferences_data)
+            preferences = Preferences.objects.create(
+                guest=guest,
+                room_type=room_data.get('type'),
+                room_temperature=room_data.get('temperature'),
+                **preferences_data
+            )
 
             for location in room_data.get('location', []):
                 RoomLocation.objects.create(preferences=preferences, location=location)
@@ -158,13 +160,14 @@ class GuestSerializer(serializers.ModelSerializer):
             
             preferences.accessible = preferences_data.get('accessible', preferences.accessible)
             preferences.bed_type = preferences_data.get('bed_type', preferences.bed_type)
-            preferences.room_type = preferences_data.get('room', {}).get('type', preferences.room_type)
-            preferences.room_temperature = preferences_data.get('room', {}).get('temperature', preferences.room_temperature)
+            room_data = preferences_data.get('room', {})
+            preferences.room_type = room_data.get('type', preferences.room_type)
+            preferences.room_temperature = room_data.get('temperature', preferences.room_temperature)
             preferences.save()
 
             # Update room locations
             preferences.room_locations.all().delete()
-            for location in preferences_data.get('room', {}).get('location', []):
+            for location in room_data.get('location', []):
                 RoomLocation.objects.create(preferences=preferences, location=location)
 
             # Update pillow types
