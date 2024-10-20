@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.db import transaction
 from .models import Guest, Booking, Preferences, RoomLocation, PillowType, Amenity, FoodPreference, FavoriteFood, DietaryRestriction, BeveragePreference, NonAlcoholicBeverage, AlcoholicBeverage
 
 class BookingSerializer(serializers.ModelSerializer):
@@ -8,7 +9,7 @@ class BookingSerializer(serializers.ModelSerializer):
 
 class RoomPreferencesSerializer(serializers.ModelSerializer):
     type = serializers.CharField(source='room_type')
-    location = serializers.ListField(child=serializers.CharField(), source='room_locations')
+    location = serializers.ListField(child=serializers.CharField())
     temperature = serializers.IntegerField(source='room_temperature')
 
     class Meta:
@@ -52,6 +53,7 @@ class GuestSerializer(serializers.ModelSerializer):
         fields = ['first_name', 'last_name', 'birthday', 'gender', 'bonvoy_id', 'email', 'phone_number', 'upcoming_bookings', 'past_bookings', 'preferences']
         read_only_fields = ['bonvoy_id']
 
+    @transaction.atomic
     def create(self, validated_data):
         upcoming_bookings_data = validated_data.pop('upcoming_bookings', [])
         past_bookings_data = validated_data.pop('past_bookings', [])
@@ -74,6 +76,8 @@ class GuestSerializer(serializers.ModelSerializer):
         room_data = preferences_data.pop('room', {})
         food_preferences_data = preferences_data.pop('food_preferences', {})
         beverage_preferences_data = preferences_data.pop('beverages', {})
+        pillow_types_data = preferences_data.pop('pillow_type', [])
+        amenities_data = preferences_data.pop('amenities', [])
 
         preferences = Preferences.objects.create(
             guest=guest,
@@ -82,24 +86,43 @@ class GuestSerializer(serializers.ModelSerializer):
             **preferences_data
         )
 
-        for location in room_data.get('location', []):
-            RoomLocation.objects.create(preferences=preferences, location=location)
+        # Handle room locations
+        RoomLocation.objects.bulk_create([
+            RoomLocation(preferences=preferences, location=location)
+            for location in room_data.get('location', [])
+        ])
 
-        for pillow_type in preferences_data.get('pillow_type', []):
-            PillowType.objects.create(preferences=preferences, type=pillow_type)
+        # Handle pillow types
+        PillowType.objects.bulk_create([
+            PillowType(preferences=preferences, type=pillow_type)
+            for pillow_type in pillow_types_data
+        ])
 
-        for amenity in preferences_data.get('amenities', []):
-            Amenity.objects.create(preferences=preferences, name=amenity)
+        # Handle amenities
+        amenities = [Amenity.objects.get_or_create(name=amenity)[0] for amenity in amenities_data]
+        preferences.amenities.set(amenities)
 
+        # Handle food preferences
         if food_preferences_data:
-            food_pref = FoodPreference.objects.create(preferences=preferences)
-            for favorite in food_preferences_data.get('favorites', []):
-                FavoriteFood.objects.create(food_preference=food_pref, name=favorite)
-            for restriction in food_preferences_data.get('dietary_restrictions', []):
-                DietaryRestriction.objects.create(food_preference=food_pref, name=restriction)
+            food_pref, _ = FoodPreference.objects.get_or_create(preferences=preferences)
+            FavoriteFood.objects.bulk_create([
+                FavoriteFood(food_preference=food_pref, name=favorite)
+                for favorite in food_preferences_data.get('favorites', [])
+            ])
+            DietaryRestriction.objects.bulk_create([
+                DietaryRestriction(food_preference=food_pref, name=restriction)
+                for restriction in food_preferences_data.get('dietary_restrictions', [])
+            ])
 
-        beverage_pref = BeveragePreference.objects.create(preferences=preferences)
-        for non_alcoholic in beverage_preferences_data.get('non_alcoholic', []):
-            NonAlcoholicBeverage.objects.create(beverage_preference=beverage_pref, name=non_alcoholic)
-        for alcoholic in beverage_preferences_data.get('alcoholic', []):
-            AlcoholicBeverage.objects.create(beverage_preference=beverage_pref, name=alcoholic)
+        # Handle beverage preferences
+        beverage_pref, _ = BeveragePreference.objects.get_or_create(preferences=preferences)
+        NonAlcoholicBeverage.objects.bulk_create([
+            NonAlcoholicBeverage(beverage_preference=beverage_pref, name=beverage)
+            for beverage in beverage_preferences_data.get('non_alcoholic', [])
+        ])
+        AlcoholicBeverage.objects.bulk_create([
+            AlcoholicBeverage(beverage_preference=beverage_pref, name=beverage)
+            for beverage in beverage_preferences_data.get('alcoholic', [])
+        ])
+
+        return preferences
