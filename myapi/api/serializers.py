@@ -155,7 +155,7 @@ class GuestDetailView(APIView):
         serializer = GuestSerializer(guest)
         return Response(serializer.data)
 
-     def put(self, request, pk):
+    def put(self, request, pk):
         try:
             guest = Guest.objects.get(pk=pk)
         except Guest.DoesNotExist:
