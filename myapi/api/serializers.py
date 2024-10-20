@@ -50,8 +50,8 @@ class PreferencesSerializer(serializers.ModelSerializer):
     room = serializers.SerializerMethodField()
     pillow_type = serializers.SerializerMethodField()
     amenities = serializers.SerializerMethodField()
-    food_preferences = FoodPreferencesSerializer()
-    beverages = BeveragePreferencesSerializer(source='beverage_preferences')
+    food_preferences = FoodPreferencesSerializer(required=False)
+    beverages = BeveragePreferencesSerializer(source='beverage_preferences', required=False)
 
     class Meta:
         model = Preferences
@@ -71,21 +71,21 @@ class PreferencesSerializer(serializers.ModelSerializer):
         return [amenity.name for amenity in obj.amenities.all()]
 
 class GuestSerializer(serializers.ModelSerializer):
-    upcoming_bookings = serializers.SerializerMethodField()
-    past_bookings = serializers.SerializerMethodField()
+    upcoming_bookings = BookingSerializer(many=True, read_only=True)
+    past_bookings = BookingSerializer(many=True, read_only=True)
     preferences = PreferencesSerializer(required=False)
 
     class Meta:
         model = Guest
         fields = ['first_name', 'last_name', 'birthday', 'gender', 'bonvoy_id', 'email', 'phone_number', 'upcoming_bookings', 'past_bookings', 'preferences']
 
-    def get_upcoming_bookings(self, obj):
-        bookings = obj.bookings.filter(is_past=False)
-        return BookingSerializer(bookings, many=True).data
-
-    def get_past_bookings(self, obj):
-        bookings = obj.bookings.filter(is_past=True)
-        return BookingSerializer(bookings, many=True).data
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['upcoming_bookings'] = BookingSerializer(instance.bookings.filter(is_past=False), many=True).data
+        representation['past_bookings'] = BookingSerializer(instance.bookings.filter(is_past=True), many=True).data
+        if hasattr(instance, 'preferences'):
+            representation['preferences'] = PreferencesSerializer(instance.preferences).data
+        return representation
 
     def create(self, validated_data):
         upcoming_bookings_data = validated_data.pop('upcoming_bookings', [])
@@ -101,41 +101,46 @@ class GuestSerializer(serializers.ModelSerializer):
             Booking.objects.create(guest=guest, is_past=True, **booking_data)
 
         if preferences_data:
-            room_data = preferences_data.pop('room', {})
-            food_preferences_data = preferences_data.pop('food_preferences', {})
-            beverage_preferences_data = preferences_data.pop('beverages', {})
-
-            preferences = Preferences.objects.create(
-                guest=guest,
-                room_type=room_data.get('type'),
-                room_temperature=room_data.get('temperature'),
-                **preferences_data
-            )
-
-            for location in room_data.get('location', []):
-                RoomLocation.objects.create(preferences=preferences, location=location)
-
-            for pillow_type in preferences_data.get('pillow_type', []):
-                PillowType.objects.create(preferences=preferences, type=pillow_type)
-
-            for amenity in preferences_data.get('amenities', []):
-                Amenity.objects.create(preferences=preferences, name=amenity)
-
-            if food_preferences_data:
-                food_pref = FoodPreference.objects.create(preferences=preferences)
-                for favorite in food_preferences_data.get('favorites', []):
-                    FavoriteFood.objects.create(food_preference=food_pref, name=favorite)
-                for restriction in food_preferences_data.get('dietary_restrictions', []):
-                    DietaryRestriction.objects.create(food_preference=food_pref, name=restriction)
-
-            if beverage_preferences_data:
-                beverage_pref = BeveragePreference.objects.create(preferences=preferences)
-                for non_alcoholic in beverage_preferences_data.get('non_alcoholic', []):
-                    NonAlcoholicBeverage.objects.create(beverage_preference=beverage_pref, name=non_alcoholic)
-                for alcoholic in beverage_preferences_data.get('alcoholic', []):
-                    AlcoholicBeverage.objects.create(beverage_preference=beverage_pref, name=alcoholic)
+            preferences = self.create_preferences(guest, preferences_data)
+            # Here you could do something with the returned preferences if needed
 
         return guest
+
+    def create_preferences(self, guest, preferences_data):
+        room_data = preferences_data.pop('room', {})
+        food_preferences_data = preferences_data.pop('food_preferences', {})
+        beverage_preferences_data = preferences_data.pop('beverages', {})
+
+        preferences = Preferences.objects.create(
+            guest=guest,
+            room_type=room_data.get('type'),
+            room_temperature=room_data.get('temperature'),
+            **preferences_data
+        )
+
+        for location in room_data.get('location', []):
+            RoomLocation.objects.create(preferences=preferences, location=location)
+
+        for pillow_type in preferences_data.get('pillow_type', []):
+            PillowType.objects.create(preferences=preferences, type=pillow_type)
+
+        for amenity in preferences_data.get('amenities', []):
+            Amenity.objects.create(preferences=preferences, name=amenity)
+
+        if food_preferences_data:
+            food_pref = FoodPreference.objects.create(preferences=preferences)
+            for favorite in food_preferences_data.get('favorites', []):
+                FavoriteFood.objects.create(food_preference=food_pref, name=favorite)
+            for restriction in food_preferences_data.get('dietary_restrictions', []):
+                DietaryRestriction.objects.create(food_preference=food_pref, name=restriction)
+
+        beverage_pref = BeveragePreference.objects.create(preferences=preferences)
+        for non_alcoholic in beverage_preferences_data.get('non_alcoholic', []):
+            NonAlcoholicBeverage.objects.create(beverage_preference=beverage_pref, name=non_alcoholic)
+        for alcoholic in beverage_preferences_data.get('alcoholic', []):
+            AlcoholicBeverage.objects.create(beverage_preference=beverage_pref, name=alcoholic)
+
+        return preferences  # Return the created Preferences instance
 
     def update(self, instance, validated_data):
         # Update basic guest information
