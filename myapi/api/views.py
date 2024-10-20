@@ -34,3 +34,13 @@ class GuestDetailView(APIView):
         guest = get_object_or_404(Guest, bonvoy_id=bonvoy_id)
         serializer = GuestResponseSerializer({'guest': guest})
         return Response(serializer.data)
+
+class GuestByBonvoyIdView(APIView):
+    def get(self, request, bonvoy_id):
+        try:
+            guest = Guest.objects.get(bonvoy_id=bonvoy_id)
+        except Guest.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = GuestSerializer(guest)
+        return Response(serializer.data)
