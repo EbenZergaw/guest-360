@@ -12,8 +12,10 @@ from django.http import HttpResponse
 def home(request):
     return HttpResponse("Welcome to Guest360 API")
 
+from django.contrib import admin
+from django.urls import path, include
+
 urlpatterns = [
-    path('', home, name='home'),
     path('admin/', admin.site.urls),
-    path('api/', include('myapi.api.urls')),
+    path('api/', include('myapi.api.urls')),  
 ]
