@@ -51,7 +51,7 @@ export default function AdminView() {
           <p>{JSON.parse(insights).insight}</p>
         </div>
       )}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-6 mt-8">
         <div className="flex flex-col gap-4 items-stretch justify-between">
           <GuestInfo guest={guest} />
 
