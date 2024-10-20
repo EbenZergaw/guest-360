@@ -6,9 +6,7 @@ A CRM for hotels to manage the preferences of their guests at scale.
 
 Frontend (NextJS): Deployed on Vercel, front end app will interact with the Django myapi via HTTP requests (API calls). The React app will send requests to our Django API's public endpoint.
 
-myapi (Django): Django will be deployed (on Heroku probably), and will interact with Firebase to handle the data. Django will expose RESTful API endpoints for our NextJS app.
-
-Database: SQL
+myapi (Django): Django will be deployed (on Heroku), and will interact with SQL to handle the data. Django will expose RESTful API endpoints for our NextJS app.
 
 ### Example Flow:
 
