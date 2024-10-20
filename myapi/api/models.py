@@ -38,7 +38,6 @@ class Preferences(models.Model):
     bed_type = models.CharField(max_length=50)
     room_type = models.CharField(max_length=50)
     room_temperature = models.IntegerField()
-    prompt_priority = models.CharField(max_length=50)
 
 class RoomLocation(models.Model):
     preferences = models.ForeignKey(Preferences, on_delete=models.CASCADE, related_name='room_locations')
