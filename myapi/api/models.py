@@ -22,9 +22,8 @@ class Guest(models.Model):
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
-# when guest is deleted, this is also deleted  (on_delete=models.CASCADE)
 class Booking(models.Model):
-    guest = models.ForeignKey(Guest, on_delete=models.CASCADE, related_name='bookings') 
+    guest = models.ForeignKey(Guest, on_delete=models.CASCADE, related_name='bookings')
     city = models.CharField(max_length=100)
     hotel = models.CharField(max_length=100)
     check_in_date = models.DateField()

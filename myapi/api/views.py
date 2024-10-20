@@ -4,9 +4,9 @@ Define endpoints
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.shortcuts import get_object_or_404
 from .models import Guest
 from .serializers import GuestSerializer
+from django.shortcuts import get_object_or_404
 
 class GuestListView(APIView):
     def get(self, request):
@@ -29,13 +29,9 @@ class GuestDetailView(APIView):
 
     def put(self, request, bonvoy_id):
         guest = get_object_or_404(Guest, bonvoy_id=bonvoy_id)
-        serializer = GuestSerializer(guest, data=request.data, partial=True)
+        serializer = GuestSerializer(guest, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, bonvoy_id):
-        guest = get_object_or_404(Guest, bonvoy_id=bonvoy_id)
-        guest.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
