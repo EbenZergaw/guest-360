@@ -113,67 +113,10 @@ class PreferencesSerializer(serializers.ModelSerializer):
             for alcoholic in beverage_preferences_data.get('alcoholic', []):
                 AlcoholicBeverage.objects.create(beverage_preference=beverage_prefs, **alcoholic)
 
-
-# serializers.py
-from rest_framework import serializers
-from .models import Guest, Preferences, Booking  # Make sure all necessary models are imported
-
 class GuestSerializer(serializers.ModelSerializer):
+    bookings = BookingSerializer(many=True, read_only=True)
+    preferences = PreferencesSerializer(read_only=True)
+
     class Meta:
         model = Guest
-        fields = ['id', 'first_name', 'last_name', 'birthday', 'gender', 'bonvoy_id', 'email', 'phone_number']
-
-# Add other serializers as needed (PreferencesSerializer, BookingSerializer, etc.)
-
-# views.py
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from .models import Guest
-from .serializers import GuestSerializer  # Make sure this import is correct
-
-class GuestListView(APIView):
-    def get(self, request):
-        guests = Guest.objects.all()
-        serializer = GuestSerializer(guests, many=True)
-        return Response(serializer.data)
-
-    def post(self, request):
-        serializer = GuestSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class GuestDetailView(APIView):
-    def get(self, request, pk):
-        try:
-            guest = Guest.objects.get(pk=pk)
-        except Guest.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = GuestSerializer(guest)
-        return Response(serializer.data)
-
-    def put(self, request, pk):
-        try:
-            guest = Guest.objects.get(pk=pk)
-        except Guest.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = GuestSerializer(guest, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class GuestByBonvoyIdView(APIView):
-    def get(self, request, bonvoy_id):
-        try:
-            guest = Guest.objects.get(bonvoy_id=bonvoy_id)
-        except Guest.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = GuestSerializer(guest)
-        return Response(serializer.data)
-
+        fields = ['id', 'first_name', 'last_name', 'birthday', 'gender', 'bonvoy_id', 'email', 'phone_number', 'bookings', 'preferences']
