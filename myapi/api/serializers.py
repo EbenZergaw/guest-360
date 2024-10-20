@@ -64,14 +64,14 @@ class RoomPreferencesSerializer(serializers.Serializer):
 
 class PreferencesSerializer(serializers.ModelSerializer):
     room = RoomPreferencesSerializer()
-    pillow_type = PillowTypeSerializer(many=True, source='pillow_types')
+    pillow_types = PillowTypeSerializer(many=True)
     amenities = AmenitySerializer(many=True)
     food_preferences = FoodPreferenceSerializer()
     beverages = BeveragePreferenceSerializer(source='beverage_preferences')
 
     class Meta:
         model = Preferences
-        fields = ['accessible', 'bed_type', 'room', 'pillow_type', 'prompt_priority', 'amenities', 'food_preferences', 'beverages']
+        fields = ['accessible', 'bed_type', 'room', 'pillow_types', 'prompt_priority', 'amenities', 'food_preferences', 'beverages']
 
     def create(self, validated_data):
         room_data = validated_data.pop('room', {})
@@ -80,11 +80,14 @@ class PreferencesSerializer(serializers.ModelSerializer):
         food_preferences_data = validated_data.pop('food_preferences', {})
         beverage_preferences_data = validated_data.pop('beverage_preferences', {})
 
+        # Ensure room_temperature has a default value if not provided
+        if 'room_temperature' not in room_data:
+            room_data['room_temperature'] = 72  # Set a default value, adjust as needed
+
         preferences = Preferences.objects.create(**validated_data)
 
         # Handle room preferences
-        if room_data:
-            RoomPreferences.objects.create(preferences=preferences, **room_data)
+        RoomPreferences.objects.create(preferences=preferences, **room_data)
 
         # Handle pillow types
         for pillow_type in pillow_types_data:
@@ -111,54 +114,3 @@ class PreferencesSerializer(serializers.ModelSerializer):
                 AlcoholicBeverage.objects.create(beverage_preference=beverage_prefs, **alcoholic)
 
         return preferences
-
-class GuestSerializer(serializers.ModelSerializer):
-    upcoming_bookings = BookingSerializer(many=True, source='bookings')
-    past_bookings = BookingSerializer(many=True, source='bookings')
-    preferences = PreferencesSerializer()
-
-    class Meta:
-        model = Guest
-        fields = ['first_name', 'last_name', 'birthday', 'gender', 'bonvoy_id', 'email', 'phone_number', 'upcoming_bookings', 'past_bookings', 'preferences']
-
-    def get_upcoming_bookings(self, obj):
-        bookings = obj.bookings.filter(is_past=False)
-        return BookingSerializer(bookings, many=True).data
-
-    def get_past_bookings(self, obj):
-        bookings = obj.bookings.filter(is_past=True)
-        return BookingSerializer(bookings, many=True).data
-
-    def create(self, validated_data):
-        bookings_data = validated_data.pop('bookings', [])
-        preferences_data = validated_data.pop('preferences', None)
-        guest = Guest.objects.create(**validated_data)
-        
-        for booking_data in bookings_data:
-            Booking.objects.create(guest=guest, **booking_data)
-        
-        if preferences_data:
-            PreferencesSerializer().create(preferences_data)
-        
-        return guest
-
-    def update(self, instance, validated_data):
-        bookings_data = validated_data.pop('bookings', None)
-        preferences_data = validated_data.pop('preferences', None)
-        
-        for attr, value in validated_data.items():
-            setattr(instance, attr, value)
-        instance.save()
-        
-        if bookings_data is not None:
-            instance.bookings.all().delete()
-            for booking_data in bookings_data:
-                Booking.objects.create(guest=instance, **booking_data)
-        
-        if preferences_data:
-            if hasattr(instance, 'preferences'):
-                PreferencesSerializer().update(instance.preferences, preferences_data)
-            else:
-                PreferencesSerializer().create(preferences_data)
-        
-        return instance
