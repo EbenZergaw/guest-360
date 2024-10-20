@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import React from 'react';
+import { GoLinkExternal } from "react-icons/go";
 
 function GuestRow({ guest }: { guest: any }) {
     const satisfactionClass = () => {
@@ -46,7 +47,7 @@ function GuestRow({ guest }: { guest: any }) {
     }
 
     return (
-        <Link href={`/guest/${guest.id}`} className='grid grid-cols-3 items-center w-full border border-slate-700 rounded-lg p-4 my-4 hover:bg-gray-100'>
+        <Link href={`/guest/${guest.id}`} className='grid grid-cols-4 items-center w-full border border-slate-700 rounded-lg p-4 my-4 hover:bg-gray-100'>
             <div className=''>
                 {guest.first_name} {guest.last_name}
             </div>
@@ -55,6 +56,10 @@ function GuestRow({ guest }: { guest: any }) {
             </div>
             <div className={`font-black text-xl ${satisfactionClass()}`}>
                 {guest.satisfaction}
+            </div>
+            {/* MAKE THIS ICON STICK TO THE RIGHT OF THE CARD IN ALIGNMENT WIT THE OTHER ELEMENTS */}
+            <div className="flex justify-end">
+                <GoLinkExternal className="relative right-4 text-xl" />
             </div>
         </Link>
     );

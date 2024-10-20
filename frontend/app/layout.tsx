@@ -19,7 +19,7 @@ export default function RootLayout({
     <ClerkProvider>
       <GuestsProvider>
       <html lang="en">
-        <body className='w-[60%] mx-auto'>
+        <body className='w-[60%] mx-auto pb-20'>
           <Navbar />
           
           {children}

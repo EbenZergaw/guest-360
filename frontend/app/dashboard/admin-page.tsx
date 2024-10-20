@@ -3,7 +3,7 @@ import React from "react";
 import GuestRow from "@/components/GuestRow";
 import { useGuests } from "@/context/GuestContext";
 
-function page() {
+function AdminPage() {
   const { guests } = useGuests();
 
   return (
@@ -25,4 +25,4 @@ function page() {
   );
 }
 
-export default page;
+export default AdminPage;
