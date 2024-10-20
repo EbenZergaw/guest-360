@@ -68,78 +68,131 @@ const GuestsContext = createContext<GuestsContextType>({
 
 // Create a provider component
 export const GuestsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [guests, setGuests] = useState<Guest[]>([
-    {
-      id: "g1",
-      first_name: "John",
-      last_name: "Smith",
-      birthday: "1990-05-20",
-      gender: "male",
-      bonvoy_id: "123e4567-e89b-12d3-a456-426614174000",
-      email: "johnsmith@example.com",
-      phone_number: "+1234567890",
-      upcoming_bookings: [],
-      past_bookings: [],
-      preferences: {
-        accessible: "true",
-        bed_type: "king",
-        room: {
-          type: "non_smoking",
-          location: ["high_floor"],
-          temperature: "72"
+    const [guests, setGuests] = useState<Guest[]>([
+        {
+          id: "g1",
+          first_name: "John",
+          last_name: "Smith",
+          birthday: "1990-05-20",
+          gender: "male",
+          bonvoy_id: "123e4567-e89b-12d3-a456-426614174000",
+          email: "johnsmith@example.com",
+          phone_number: "+1234567890",
+          upcoming_bookings: [
+            {
+              city: "New York",
+              hotel: "Marriott Downtown",
+              checkInDate: "2024-05-10",
+              checkOutDate: "2024-05-15",
+              numberOfRooms: "1",
+              numberOfGuests: "2",
+            },
+            {
+              city: "Los Angeles",
+              hotel: "Ritz Carlton",
+              checkInDate: "2024-06-01",
+              checkOutDate: "2024-06-05",
+              numberOfRooms: "2",
+              numberOfGuests: "4",
+            }
+          ],
+          past_bookings: [
+            {
+              city: "Miami",
+              hotel: "Marriott Beachfront",
+              checkInDate: "2023-07-20",
+              checkOutDate: "2023-07-25",
+              numberOfRooms: "1",
+              numberOfGuests: "2",
+            },
+            {
+              city: "Chicago",
+              hotel: "Marriott City Center",
+              checkInDate: "2023-08-15",
+              checkOutDate: "2023-08-20",
+              numberOfRooms: "1",
+              numberOfGuests: "1",
+            }
+          ],
+          preferences: {
+            accessible: "true",
+            bed_type: "king",
+            room: {
+              type: "non_smoking",
+              location: ["high_floor"],
+              temperature: "72",
+            },
+            pillow_type: ["foam"],
+            prompt_priority: "room_type",
+            amenities: ["extra_towels"],
+            food_preferences: {
+              favorites: ["pizza"],
+              dietary_restrictions: ["gluten_free"],
+            },
+            beverages: {
+              non_alcoholic: ["juice"],
+              alcoholic: ["vodka"],
+            },
+          },
+          lastBooking: "2023-12-15",
+          satisfaction: 87,
+          loyalty: 92,
         },
-        pillow_type: ["foam"],
-        prompt_priority: "room_type",
-        amenities: ["extra_towels"],
-        food_preferences: {
-          favorites: ["pizza"],
-          dietary_restrictions: ["gluten_free"]
-        },
-        beverages: {
-          non_alcoholic: ["juice"],
-          alcoholic: ["vodka"]
+        {
+          id: "g2",
+          first_name: "Emily",
+          last_name: "Johnson",
+          birthday: "1985-11-02",
+          gender: "female",
+          bonvoy_id: "987e6543-e89b-12d3-a456-426614174000",
+          email: "emilyjohnson@example.com",
+          phone_number: "+0987654321",
+          upcoming_bookings: [
+            {
+              city: "San Francisco",
+              hotel: "Marriott Marquis",
+              checkInDate: "2024-03-10",
+              checkOutDate: "2024-03-14",
+              numberOfRooms: "1",
+              numberOfGuests: "2",
+            }
+          ],
+          past_bookings: [
+            {
+              city: "Boston",
+              hotel: "Marriott Back Bay",
+              checkInDate: "2023-11-05",
+              checkOutDate: "2023-11-10",
+              numberOfRooms: "1",
+              numberOfGuests: "2",
+            }
+          ],
+          preferences: {
+            accessible: "false",
+            bed_type: "double",
+            room: {
+              type: "smoking",
+              location: ["low_floor"],
+              temperature: "70",
+            },
+            pillow_type: ["extra_feather"],
+            prompt_priority: "bed_type",
+            amenities: ["refrigerator"],
+            food_preferences: {
+              favorites: ["fruits"],
+              dietary_restrictions: ["no_pork"],
+            },
+            beverages: {
+              non_alcoholic: ["tea"],
+              alcoholic: ["red_wine"],
+            },
+          },
+          lastBooking: "2024-01-03",
+          satisfaction: 45,
+          loyalty: 78,
         }
-      },
-      lastBooking: "2023-12-15",
-      satisfaction: 87,
-      loyalty: 92,
-    },
-    {
-      id: "g2",
-      first_name: "Emily",
-      last_name: "Johnson",
-      birthday: "1985-11-02",
-      gender: "female",
-      bonvoy_id: "987e6543-e89b-12d3-a456-426614174000",
-      email: "emilyjohnson@example.com",
-      phone_number: "+0987654321",
-      upcoming_bookings: [],
-      past_bookings: [],
-      preferences: {
-        accessible: "false",
-        bed_type: "double",
-        room: {
-          type: "smoking",
-          location: ["low_floor"],
-          temperature: "70"
-        },
-        pillow_type: ["extra_feather"],
-        prompt_priority: "bed_type",
-        amenities: ["refrigerator"],
-        food_preferences: {
-          favorites: ["fruits"],
-          dietary_restrictions: ["no_pork"]
-        },
-        beverages: {
-          non_alcoholic: ["tea"],
-          alcoholic: ["red_wine"]
-        }
-      },
-      lastBooking: "2024-01-03",
-      satisfaction: 45,
-      loyalty: 78,
-    }
-  ]);
+      ]);
+    
 
   // Function to add a guest
   const addGuest = (guest: Guest) => {

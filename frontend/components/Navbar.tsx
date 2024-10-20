@@ -20,7 +20,7 @@ export default function Navbar() {
           <div className="flex items-center">
             
             <Link href="/" className="flex-shrink-0">
-              <span className="text-xl font-bold text-primary">Guest-360</span>
+              <span className="text-xl font-bold text-primary">Guest360</span>
             </Link>
 
             <div className="hidden md:block">

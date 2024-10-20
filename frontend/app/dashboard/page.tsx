@@ -14,7 +14,7 @@ function page() {
 <div className="w-full mx-auto">
       <div className="grid grid-cols-4 items-center rounded-lg p-4 my-4">
         <div className="font-bold">Name</div>
-        <div>Last Booking</div>
+        <div>Upcoming Booking</div>
         <div>Satisfaction</div>
         <div>Loyalty</div>
       </div>

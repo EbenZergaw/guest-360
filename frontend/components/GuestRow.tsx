@@ -28,19 +28,33 @@ function GuestRow({ guest }: { guest: any }) {
         }
     };
 
+    const countHowManyDaysFromUpcomingBooking = () => {
+        const today = new Date();
+        const upcomingBookingDate = new Date(guest.upcoming_bookings[0].checkInDate);
+        const diffTime = Math.abs(upcomingBookingDate.getTime() - today.getTime());
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        return diffDays;
+    }
+
+    const nextBooking = () => {
+        // if there is an upcoming booking, return the days from today, else return "No upcoming booking"
+        if (guest.upcoming_bookings.length > 0) {
+            return countHowManyDaysFromUpcomingBooking() + " days";
+        } else {
+            return "No upcoming booking";
+        }
+    }
+
     return (
-        <Link href={`/guest/${guest.id}`} className='grid grid-cols-4 items-center w-full border border-slate-700 rounded-lg p-4 my-4 hover:bg-gray-100'>
+        <Link href={`/guest/${guest.id}`} className='grid grid-cols-3 items-center w-full border border-slate-700 rounded-lg p-4 my-4 hover:bg-gray-100'>
             <div className=''>
-                {guest.name}
+                {guest.first_name} {guest.last_name}
             </div>
-            <div className=''>
-                {guest.lastBooking}
+            <div className='font-semibold'>
+                {nextBooking()}
             </div>
             <div className={`font-black text-xl ${satisfactionClass()}`}>
                 {guest.satisfaction}
-            </div>
-            <div className={`font-black text-xl ${loyaltyClass()}`}>
-                {guest.loyalty}
             </div>
         </Link>
     );
