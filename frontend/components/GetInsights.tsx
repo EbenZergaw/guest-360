@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
 import Groq from "groq-sdk";
 import { Preferences } from '@/context/GuestContext';
+import { Button } from '@/components/ui/button';
 
 interface GetInsightsProps {
   preferences: Preferences;
+  setInsights: (insights: any) => void;
+  insights: any;
 }
 
-function GetInsights({ preferences }: GetInsightsProps) {
-  const [insights, setInsights] = useState<string | null>(null);
+function GetInsights({ preferences, setInsights, insights }: GetInsightsProps) {
+//   const [insights, setInsights] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleSubmit = async () => {
@@ -60,16 +63,9 @@ function GetInsights({ preferences }: GetInsightsProps) {
 
   return (
     <div>
-      <button onClick={handleSubmit} disabled={loading}>
+      <Button variant='outline' className='border w-full border-blue-300 bg-gradient-to-t from-blue-500 to-sky-300 rounded text-gray-800' onClick={handleSubmit} disabled={loading}>
         {loading ? 'Generating Insights...' : 'Get Insights'}
-      </button>
-
-      {insights && (
-        <div>
-          <h3>Insights:</h3>
-          <p>{JSON.parse(insights).insight}</p>
-        </div>
-      )}
+      </Button>
     </div>
   );
 }

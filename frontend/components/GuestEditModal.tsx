@@ -156,10 +156,10 @@ export default function GuestEditModal({ guest: initialGuest }: GuestEditModalPr
   }
 
   return (
-    <div className='mb-8'>
+    <div className=''>
       <Button 
         variant="outline" 
-        className='border border-orange-300 bg-gradient-to-t from-amber-500 to-amber-300 rounded text-gray-800' 
+        className='border w-full mb-3 border-orange-300 bg-gradient-to-t from-amber-500 to-amber-300 rounded text-gray-800' 
         onClick={() => setIsOpen(true)}
       >
         Edit Guest

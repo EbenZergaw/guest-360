@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/router";
 import { useParams } from "next/navigation";
 import { useGuests } from "../../../context/GuestContext";
@@ -32,10 +32,25 @@ export default function AdminView() {
     )
   );
 
+  const [insights, setInsights] = useState<any>("");
+
   return (
     <div>
-      <GuestEditModal guest={guest} />
-      <GetInsights preferences={guest.preferences} />
+      <div className="flex items-center justify-between">
+        <GuestEditModal guest={guest} />
+        <GetInsights
+          preferences={guest.preferences}
+          setInsights={setInsights}
+          insights={insights}
+        />
+      </div>
+
+      {insights && (
+        <div className="border p-2 rounded mb-4">
+          <h3 className="font-medium">Insights:</h3>
+          <p>{JSON.parse(insights).insight}</p>
+        </div>
+      )}
       <div className="grid grid-cols-2 gap-6">
         <div className="flex flex-col gap-4 items-stretch justify-between">
           <GuestInfo guest={guest} />
