@@ -34,6 +34,27 @@ class DietaryRestrictionSerializer(serializers.ModelSerializer):
         model = DietaryRestriction
         fields = ['name']
 
+class FoodPreferenceSerializer(serializers.ModelSerializer):
+    favorites = FavoriteFoodSerializer(many=True)
+    dietary_restrictions = DietaryRestrictionSerializer(many=True)
+
+    class Meta:
+        model = FoodPreference
+        fields = ['favorites', 'dietary_restrictions']
+
+    def create(self, validated_data):
+        favorites_data = validated_data.pop('favorites', [])
+        dietary_restrictions_data = validated_data.pop('dietary_restrictions', [])
+        food_preference = FoodPreference.objects.create(**validated_data)
+
+        for favorite_data in favorites_data:
+            FavoriteFood.objects.create(food_preference=food_preference, **favorite_data)
+        
+        for restriction_data in dietary_restrictions_data:
+            DietaryRestriction.objects.create(food_preference=food_preference, **restriction_data)
+
+        return food_preference
+
 class NonAlcoholicBeverageSerializer(serializers.ModelSerializer):
     class Meta:
         model = NonAlcoholicBeverage
@@ -98,18 +119,10 @@ class PreferencesSerializer(serializers.ModelSerializer):
             Amenity.objects.create(preferences=preferences, name=amenity)
 
         if food_preferences_data:
-            food_pref = FoodPreference.objects.create(preferences=preferences)
-            for favorite in food_preferences_data.get('favorites', []):
-                FavoriteFood.objects.create(food_preference=food_pref, name=favorite)
-            for restriction in food_preferences_data.get('dietary_restrictions', []):
-                DietaryRestriction.objects.create(food_preference=food_pref, name=restriction)
+            FoodPreferenceSerializer().create(dict(preferences=preferences, **food_preferences_data))
 
         if beverage_preferences_data:
-            beverage_pref = BeveragePreference.objects.create(preferences=preferences)
-            for non_alcoholic in beverage_preferences_data.get('non_alcoholic', []):
-                NonAlcoholicBeverage.objects.create(beverage_preference=beverage_pref, **non_alcoholic)
-            for alcoholic in beverage_preferences_data.get('alcoholic', []):
-                AlcoholicBeverage.objects.create(beverage_preference=beverage_pref, **alcoholic)
+            BeveragePreferenceSerializer().create(dict(preferences=preferences, **beverage_preferences_data))
 
         return preferences
 
