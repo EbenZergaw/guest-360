@@ -3,6 +3,7 @@ import React from "react";
 import GuestRow from "@/components/GuestRow";
 import { useGuests } from "@/context/GuestContext";
 import { useUser } from "@clerk/nextjs";
+import GuestModalForm from "@/components/GuestModalForm";
 
 function page() {
   const { guests } = useGuests();
@@ -23,6 +24,8 @@ function page() {
           <GuestRow guest={guest} />
         ))}
       </div>
+      {user?.username != "room-service" && <GuestModalForm />}
+      
     </div>
   );
 }

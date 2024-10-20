@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 // Define the shape of a booking
-interface Booking {
+export interface Booking {
   city: string;
   hotel: string;
   checkInDate: string;
@@ -11,7 +11,7 @@ interface Booking {
 }
 
 // Define the shape of guest preferences
-interface Preferences {
+export interface Preferences {
   accessible: string;
   bed_type: string;
   room: {
@@ -33,7 +33,7 @@ interface Preferences {
 }
 
 // Define the shape of a guest
-interface Guest {
+export interface Guest {
   id: string;
   first_name: string;
   last_name: string;
@@ -68,6 +68,9 @@ const GuestsContext = createContext<GuestsContextType>({
 
 // Create a provider component
 export const GuestsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+
+
+
     const [guests, setGuests] = useState<Guest[]>([
         {
           id: "g1",
@@ -135,7 +138,7 @@ export const GuestsProvider: React.FC<{ children: ReactNode }> = ({ children }) 
             },
           },
           lastBooking: "2023-12-15",
-          satisfaction: 87,
+          satisfaction: 30,
           loyalty: 92,
         },
         {

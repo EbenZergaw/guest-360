@@ -1,11 +1,12 @@
 "use client";
-
 import * as React from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 import { SignedOut, SignInButton, SignedIn, UserButton } from '@clerk/nextjs';
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
+import { FaStreetView } from "react-icons/fa";
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -21,7 +22,8 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             
-            <Link href="/" className="flex-shrink-0">
+            <Link href="/" className="flex-shrink-0 flex items-center">
+              <FaStreetView className="text-2xl mr-2 text-orange-600" />
               <span className="text-xl font-bold text-primary">Guest360</span>
             </Link>
 
