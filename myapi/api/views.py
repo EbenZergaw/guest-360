@@ -43,3 +43,16 @@ class GuestDetailView(APIView):
         ), bonvoy_id=bonvoy_id)
         serializer = GuestSerializer(guest)
         return Response(serializer.data)
+
+    def put(self, request, bonvoy_id):
+        guest = get_object_or_404(Guest, bonvoy_id=bonvoy_id)
+        serializer = GuestSerializer(guest, data=request.data)
+        if serializer.is_valid():
+            guest = serializer.save()
+            return Response(GuestSerializer(guest).data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, bonvoy_id):
+        guest = get_object_or_404(Guest, bonvoy_id=bonvoy_id)
+        guest.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
