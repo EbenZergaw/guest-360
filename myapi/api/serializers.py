@@ -47,7 +47,7 @@ class BeveragePreferencesSerializer(serializers.ModelSerializer):
         return [beverage.name for beverage in obj.alcoholic.all()]
 
 class PreferencesSerializer(serializers.ModelSerializer):
-    room = RoomPreferencesSerializer(source='*')
+    room = serializers.SerializerMethodField()
     pillow_type = serializers.SerializerMethodField()
     amenities = serializers.SerializerMethodField()
     food_preferences = FoodPreferencesSerializer()
@@ -56,6 +56,13 @@ class PreferencesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Preferences
         fields = ['accessible', 'bed_type', 'room', 'pillow_type', 'amenities', 'food_preferences', 'beverages']
+
+    def get_room(self, obj):
+        return {
+            'type': obj.room_type,
+            'location': [location.location for location in obj.room_locations.all()],
+            'temperature': obj.room_temperature
+        }
 
     def get_pillow_type(self, obj):
         return [pillow.type for pillow in obj.pillow_types.all()]
