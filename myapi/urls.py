@@ -1,7 +1,7 @@
 """
 Main URL configuration responsible for directing traffic.
 
-This can be ignored as the front end will be developed using NextJS and deployed on Vercel.
+This can be ignored as the front end will be developed using NextJS and deployed on Vercel
 """
 
 

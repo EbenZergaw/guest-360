@@ -2,8 +2,9 @@
 Define URLs for APIs
 """
 from django.urls import path
-from .views import GuestView
+from .views import GuestListView, GuestDetailView
 
 urlpatterns = [
-    path('guests/', GuestView.as_view(), name='guest-list'),
+    path('guests/', GuestListView.as_view(), name='guest-list'),
+    path('guests/<uuid:bonvoy_id>/', GuestDetailView.as_view(), name='guest-detail'),
 ]
