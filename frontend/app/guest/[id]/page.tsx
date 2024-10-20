@@ -30,7 +30,7 @@ function GuestProfile() {
         <AdminView />
       </>
     );
-  } else if ((user.username == "front-desk")) {
+  } else if ((user.username = "front-desk")) {
     return (
       <>
         <Link className="underline pb-20" href="/dashboard">
@@ -49,7 +49,7 @@ function GuestProfile() {
         </Link>
         <br />
         <br />
-        <RoomServiceView />
+        <RoomService />
       </>
     );
   }
