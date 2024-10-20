@@ -12,6 +12,7 @@ import { GuestInfo } from "@/components/profile/GuestInfo";
 import BookingHistory from "@/components/profile/BookingHistory";
 import UpcomingBookings from "@/components/profile/UpcomingBookings";
 import PastBookings from "@/components/profile/PastBookings";
+import GetInsights from "@/components/GetInsights";
 
 export default function AdminView() {
   const id = useParams().id;
@@ -34,6 +35,7 @@ export default function AdminView() {
   return (
     <div>
       <GuestEditModal guest={guest} />
+      <GetInsights preferences={guest.preferences} />
       <div className="grid grid-cols-2 gap-6">
         <div className="flex flex-col gap-4 items-stretch justify-between">
           <GuestInfo guest={guest} />

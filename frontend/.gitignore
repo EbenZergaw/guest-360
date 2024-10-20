@@ -6,6 +6,10 @@
 .pnp.js
 .yarn/install-state.gz
 
+# api keys
+.env
+.env.local
+
 # testing
 /coverage
 

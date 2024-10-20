@@ -12,6 +12,7 @@ import UpcomingBookings from "@/components/profile/UpcomingBookings";
 import Preferences from "@/components/profile/Preferences";
 import BookingHistory from "@/components/profile/BookingHistory";
 import PastBookings from "@/components/profile/PastBookings";
+import GetInsights from "@/components/GetInsights";
 
 import { useState } from "react";
 
@@ -30,6 +31,7 @@ function FrontDeskView() {
   return (
     <div>
       <GuestEditModal guest={guest} />
+      <GetInsights preferences={guest.preferences} />
       <div className="grid grid-cols-2 gap-6">
         <div className="flex flex-col gap-4 items-stretch justify-between">
           <GuestInfo guest={guest} />

@@ -49,7 +49,7 @@ function GuestProfile() {
         </Link>
         <br />
         <br />
-        <RoomService />
+        <RoomServiceView />
       </>
     );
   }
