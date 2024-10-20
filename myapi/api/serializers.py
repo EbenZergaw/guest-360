@@ -11,7 +11,7 @@ class RoomPreferencesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Preferences
-        fields = ['type', 'location', 'temperature']
+        fields = ['room_type', 'location', 'temperature']
 
     def get_location(self, obj):
         return [location.location for location in obj.room_locations.all()]
