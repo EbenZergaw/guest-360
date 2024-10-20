@@ -32,10 +32,7 @@ class Guest(models.Model):
     phone_number = models.CharField(max_length=20)
     upcoming_bookings = models.ManyToManyField(Booking, related_name='upcoming_guests')
     past_bookings = models.ManyToManyField(Booking, related_name='past_guests')
-    preferences = models.OneToOneField(Preferences, on_delete=models.CASCADE)
-
-# Now, let's create a new migration file to reset the migrations
-# Create a new file named 0001_initial.py in the migrations folder
+    preferences = models.OneToOneField(Preferences, on_delete=models.CASCADE, null=True)
 
 # migrations/0001_initial.py
 from django.db import migrations, models
@@ -88,9 +85,9 @@ class Migration(migrations.Migration):
                 ('bonvoy_id', models.UUIDField()),
                 ('email', models.EmailField(max_length=254)),
                 ('phone_number', models.CharField(max_length=20)),
-                ('past_bookings', models.ManyToManyField(related_name='past_guests', to='guest360.booking')),
-                ('preferences', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='guest360.preferences')),
-                ('upcoming_bookings', models.ManyToManyField(related_name='upcoming_guests', to='guest360.booking')),
+                ('past_bookings', models.ManyToManyField(related_name='past_guests', to='api.booking')),
+                ('preferences', models.OneToOneField(null=True, on_delete=django.db.models.deletion.CASCADE, to='api.preferences')),
+                ('upcoming_bookings', models.ManyToManyField(related_name='upcoming_guests', to='api.booking')),
             ],
         ),
     ]
