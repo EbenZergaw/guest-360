@@ -13,7 +13,7 @@ class GuestByBonvoyIdView(APIView):
         guest = get_object_or_404(Guest, bonvoy_id=bonvoy_id)
         serializer = GuestSerializer(guest)
         return Response(serializer.data)
-        
+
 class GuestListView(APIView):
     def get(self, request):
         guests = Guest.objects.all()
