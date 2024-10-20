@@ -7,5 +7,4 @@ from .views import GuestListView, GuestDetailView
 urlpatterns = [
     path('guests/', GuestListView.as_view(), name='guest-list'),
     path('guests/<uuid:bonvoy_id>/', GuestDetailView.as_view(), name='guest-detail'),
-    path('guests/bonvoy/<uuid:bonvoy_id>/', GuestByBonvoyIdView.as_view(), name='guest-by-bonvoy-id'),
 ]
