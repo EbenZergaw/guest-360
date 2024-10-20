@@ -170,6 +170,14 @@ class GuestSerializer(serializers.ModelSerializer):
         model = Guest
         fields = ['first_name', 'last_name', 'birthday', 'gender', 'bonvoy_id', 'email', 'phone_number', 'upcoming_bookings', 'past_bookings', 'preferences']
 
+    def get_upcoming_bookings(self, obj):
+        bookings = obj.bookings.filter(is_past=False)
+        return BookingSerializer(bookings, many=True).data
+
+    def get_past_bookings(self, obj):
+        bookings = obj.bookings.filter(is_past=True)
+        return BookingSerializer(bookings, many=True).data
+        
     def create(self, validated_data):
         bookings_data = validated_data.pop('bookings', [])
         preferences_data = validated_data.pop('preferences', None)

@@ -8,6 +8,12 @@ from .models import Guest
 from .serializers import GuestSerializer
 from django.shortcuts import get_object_or_404
 
+class GuestByBonvoyIdView(APIView):
+    def get(self, request, bonvoy_id):
+        guest = get_object_or_404(Guest, bonvoy_id=bonvoy_id)
+        serializer = GuestSerializer(guest)
+        return Response(serializer.data)
+        
 class GuestListView(APIView):
     def get(self, request):
         guests = Guest.objects.all()
