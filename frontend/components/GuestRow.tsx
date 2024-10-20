@@ -1,8 +1,13 @@
+"use client"
 import Link from 'next/link';
 import React from 'react';
 import { GoLinkExternal } from "react-icons/go";
+import { useUser } from "@clerk/nextjs";
 
 function GuestRow({ guest }: { guest: any }) {
+
+    const { user } = useUser();
+
     const satisfactionClass = () => {
         // Classes based on satisfaction; 100 is green, 0 is red.
         if (guest.satisfaction >= 85) {
@@ -10,19 +15,6 @@ function GuestRow({ guest }: { guest: any }) {
         } else if (guest.satisfaction >= 50) {
             return 'text-yellow-500';
         } else if (guest.satisfaction >= 30) {
-            return 'text-orange-500';
-        } else {
-            return 'text-red-500';
-        }
-    };
-
-    const loyaltyClass = () => {
-        // Optionally, you can apply a similar color logic for loyalty
-        if (guest.loyalty >= 85) {
-            return 'text-green-700';
-        } else if (guest.loyalty >= 50) {
-            return 'text-yellow-500';
-        } else if (guest.loyalty >= 30) {
             return 'text-orange-500';
         } else {
             return 'text-red-500';
@@ -47,17 +39,22 @@ function GuestRow({ guest }: { guest: any }) {
     }
 
     return (
-        <Link href={`/guest/${guest.id}`} className='grid grid-cols-4 items-center w-full border border-slate-700 rounded-lg p-4 my-4 hover:bg-gray-100'>
+        <Link href={`/guest/${guest.id}`} className={`grid ${user?.username == "room-service" ? "grid-cols-3" : "grid-cols-4"} items-center w-full border border-slate-700 rounded-lg p-4 my-4 hover:bg-gray-100`}>
             <div className=''>
                 {guest.first_name} {guest.last_name}
             </div>
-            <div className='font-semibold'>
-                {nextBooking()}
-            </div>
+            {
+                user?.username != "room-service" && (
+                    <div className='font-semibold'>
+                        {nextBooking()}
+                    </div>
+                )
+            }
             <div className={`font-black text-xl ${satisfactionClass()}`}>
                 {guest.satisfaction}
             </div>
-            {/* MAKE THIS ICON STICK TO THE RIGHT OF THE CARD IN ALIGNMENT WIT THE OTHER ELEMENTS */}
+            
+
             <div className="flex justify-end">
                 <GoLinkExternal className="relative right-4 text-xl" />
             </div>
