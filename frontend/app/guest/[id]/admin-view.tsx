@@ -6,12 +6,13 @@ import { useGuests } from "../../../context/GuestContext";
 import { Slider } from "@/components/ui/slider";
 import CalendarHeatmap from "react-calendar-heatmap";
 import "react-calendar-heatmap/dist/styles.css";
+import GuestEditModal from "@/components/GuestEditModal";
 
 function AdminView() {
   const id = useParams().id;
   const { guests } = useGuests();
 
-  const guest = guests.find((g) => g.id === id);
+  const guest = guests.find((g) => g.bonvoy_id === id);
 
   const preferences = guest?.preferences;
 
@@ -96,6 +97,9 @@ function AdminView() {
 
   return (
     <div>
+      <GuestEditModal 
+        guest={guest}
+      />
       <div className="grid grid-cols-2 gap-6">
         <div className="flex flex-col gap-4 items-stretch justify-between">
             <div className="flex flex-col gap-4 h-full items-stretch">
@@ -106,7 +110,7 @@ function AdminView() {
                 <div className="flex flex-col gap-3">
                     <div className="flex items-center gap-3">
                     <span className="font-bold">Bonvoy Number:</span>
-                    <span>BONVOY NUMBER OVER HERE</span>
+                    <span>{id}</span>
                     </div>
 
                     <div className="flex items-center gap-3">

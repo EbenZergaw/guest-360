@@ -39,7 +39,7 @@ function GuestRow({ guest }: { guest: any }) {
     }
 
     return (
-        <Link href={`/guest/${guest.id}`} className={`grid ${user?.username == "room-service" ? "grid-cols-3" : "grid-cols-4"} items-center w-full border border-slate-700 rounded-lg p-4 my-4 hover:bg-gray-100`}>
+        <Link href={`/guest/${guest.bonvoy_id}`} className={`grid ${user?.username == "room-service" ? "grid-cols-3" : "grid-cols-4"} items-center w-full border border-slate-700 rounded-lg p-4 my-4 hover:bg-gray-100`}>
             <div className=''>
                 {guest.first_name} {guest.last_name}
             </div>

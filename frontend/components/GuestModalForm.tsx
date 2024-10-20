@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Guest } from '@/context/GuestContext'
+import { useGuests } from '@/context/GuestContext'
+import { v4 as uuidv4 } from 'uuid';
 
 export default function GuestModalForm() {
   const [isOpen, setIsOpen] = useState(false)
@@ -17,7 +19,7 @@ export default function GuestModalForm() {
     last_name: '',
     birthday: '',
     gender: '',
-    bonvoy_id: '',
+    bonvoy_id: uuidv4(),
     email: '',
     phone_number: '',
     upcoming_bookings: [],
@@ -47,6 +49,8 @@ export default function GuestModalForm() {
     loyalty: 0,
   })
 
+  const { addGuest } = useGuests()
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, field: string) => {
     setGuest({ ...guest, [field]: e.target.value })
   }
@@ -74,8 +78,45 @@ export default function GuestModalForm() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    console.log(guest)
+    addGuest(guest)
+    console.log('New guest added:', guest)
     setIsOpen(false)
+    // Reset the form
+    setGuest({
+      id: '',
+      first_name: '',
+      last_name: '',
+      birthday: '',
+      gender: '',
+      bonvoy_id: uuidv4(),
+      email: '',
+      phone_number: '',
+      upcoming_bookings: [],
+      past_bookings: [],
+      preferences: {
+        accessible: '',
+        bed_type: '',
+        room: {
+          type: '',
+          location: [],
+          temperature: '',
+        },
+        pillow_type: [],
+        prompt_priority: '',
+        amenities: [],
+        food_preferences: {
+          favorites: [],
+          dietary_restrictions: [],
+        },
+        beverages: {
+          non_alcoholic: [],
+          alcoholic: [],
+        },
+      },
+      lastBooking: '',
+      satisfaction: 0,
+      loyalty: 0,
+    })
   }
 
   return (
@@ -124,10 +165,7 @@ export default function GuestModalForm() {
                     </Select>
                   </div>
                 </div>
-                <div>
-                  <Label htmlFor="bonvoy_id">Bonvoy ID</Label>
-                  <Input id="bonvoy_id" value={guest.bonvoy_id} onChange={(e) => handleInputChange(e, 'bonvoy_id')} />
-                </div>
+               
                 <div>
                   <Label htmlFor="email">Email</Label>
                   <Input id="email" type="email" value={guest.email} onChange={(e) => handleInputChange(e, 'email')} />

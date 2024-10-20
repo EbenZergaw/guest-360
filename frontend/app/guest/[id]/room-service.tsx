@@ -9,7 +9,7 @@ function RoomServiceView() {
   const id = useParams().id;
   const { guests } = useGuests();
 
-  const guest = guests.find((g) => g.id === id);
+  const guest = guests.find((g) => g.bonvoy_id === id);
 
   const preferences = guest?.preferences;
 
