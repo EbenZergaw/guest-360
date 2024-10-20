@@ -27,7 +27,6 @@ class Guest(models.Model):
     last_name = models.CharField(max_length=100)
     birthday = models.DateField()
     gender = models.CharField(max_length=20)
-    bonvoy_id = models.UUIDField()
     email = models.EmailField()
     phone_number = models.CharField(max_length=20)
     upcoming_bookings = models.ManyToManyField(Booking, related_name='upcoming_guests')
@@ -82,7 +81,6 @@ class Migration(migrations.Migration):
                 ('last_name', models.CharField(max_length=100)),
                 ('birthday', models.DateField()),
                 ('gender', models.CharField(max_length=20)),
-                ('bonvoy_id', models.UUIDField()),
                 ('email', models.EmailField(max_length=254)),
                 ('phone_number', models.CharField(max_length=20)),
                 ('past_bookings', models.ManyToManyField(related_name='past_guests', to='api.booking')),
