@@ -1,10 +1,10 @@
-"""
-Define URLs for APIs
-"""
-from django.urls import path
-from .views import GuestListView
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from .views import GuestViewSet
+
+router = DefaultRouter()
+router.register(r'guests', GuestViewSet)
 
 urlpatterns = [
-    path('guests/', GuestListView.as_view(), name='guest-list'),
-    path('guests/<uuid:bonvoy_id>/', GuestDetailView.as_view(), name='guest-detail'),
+    path('', include(router.urls)),
 ]
